@@ -51,8 +51,6 @@ The results of the processing should be presented in the form of a continuously 
 A python (or another language) script should consume data from the topic, and create plots and histograms of the aforementioned quantities.
 Simple python modules such as `bokeh` or `pyplot` (in its free version) can help create a continuously updating webpage where to visualize the plots. You are however encouraged to explore and apply any other solution for this part of the task you might consider viable.
 
-### 2.4 Extras
-Check Section 5.2.4 of the pdf.
 
 ## 3 Hint
 - Start by prototyping the processing for a single static batch before extending to the streaming part
