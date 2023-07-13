@@ -1,4 +1,8 @@
 # Streaming processing of cosmic rays using Drift Tubes detectors
+
+The final dashboard is available at this link: https://youtu.be/3Sd7UJH7IFg
+
+
 #### Goal 
 The goal of this project is to reproduce a real-time processing of real data collected in a particle physics detector and publish the results in a
 dashboard for live monitoring.
