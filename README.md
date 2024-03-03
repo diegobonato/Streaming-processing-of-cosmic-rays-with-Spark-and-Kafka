@@ -35,3 +35,6 @@ kafka_admin.create_topics(new_topics=[data_raw, data_clean])
 kafka_admin.list_topics()
 
 ```
+
+- Connect to s3 bucket
+- Send message asynchronously -> `KafkaProducer.send()`
