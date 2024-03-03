@@ -12,7 +12,8 @@ The final dashboard is available at this link: https://youtu.be/3Sd7UJH7IFg
 * Process the data using **Spark** and send the results to a **real-time dashboard** (Bokeh). 
 
 ## Network architecture
-# aggiungi imamgine 4
+<img src="imgs/network_schematics.png" alt="Network schematics">
+
 
 ### Producer
  
@@ -131,29 +132,18 @@ def batch_processing(df, epoch_id):
 
     # 1: total number of processed hits, post-cleansing (1 value per batch)
     
-    start = time.time()
-    
     hit_count = df.count()
     
-    
     # 2: total number of processed hits, post-cleansing, per chamber (4 values per batch)
-
 
     hit_count_chamber = df.groupby('CHAMBER').agg(count('TDC_CHANNEL').alias('HIT_COUNT'))\
                         .sort("CHAMBER").select('HIT_COUNT')\
                         .agg(collect_list('HIT_COUNT')).collect()
 
-
-
     # 3: histogram of the counts of active TDC_CHANNEL, per chamber (4 arrays per batch)
 
     tdc_counts = df.groupby(['CHAMBER','TDC_CHANNEL']).agg(count('TDC_CHANNEL').alias('TDC_COUNTS'))
     tdc_counts = tdc_counts.persist()
-
-    # Filter the tdc_counts DataFrame for each chamber 
-    
-    ch0_tdc_counts = tdc_counts.filter(tdc_counts.CHAMBER == 0).select('TDC_CHANNEL','TDC_COUNTS')\
-                    .sort("TDC_CHANNEL").toPandas()
     
    "(...)"
 
@@ -162,8 +152,6 @@ def batch_processing(df, epoch_id):
     orbit_count=df.groupby(['CHAMBER','ORBIT_CNT']).agg(countDistinct("TDC_CHANNEL").alias('TDC_ORBIT'))
     orbit_count = orbit_count.persist()
 
-    ch0_orbit_counts = orbit_count.filter(orbit_count.CHAMBER == 0).select('ORBIT_CNT','TDC_ORBIT')\
-                    .sort("ORBIT_CNT").toPandas()
     "(...)"
 
     df.unpersist()
@@ -179,23 +167,8 @@ def batch_processing(df, epoch_id):
         'msg_ID': ID,
         'hit_count': hit_count,
         'hit_count_chamber': hit_count_chamber[0][0],
-           
-        'tdc_counts_chamber': {
-            '0': {
-                'bin_edges': ch0_tdc_channels_list,
-                'hist_counts': ch0_tdc_counts_list
-            },
-            "(...)"
-        },
-        'active_tdc_chamber': {
-            '0': {
-                'bin_edges': ch0_orbit_list,
-                'hist_counts': ch0_orbit_counts_list
-            },
-        }
-            "(...)"
+        "(..,)"
     }
-    
    
     producer.send('data_clean', json.dumps(msg).encode('utf-8'))
     producer.flush()
@@ -250,7 +223,6 @@ def polling():
     
     return combined_dict
 
-
   ```
 
   * Create periodic function and launch the dashboard with `bokeh serve --show consumer_dashboard.py`
@@ -269,4 +241,8 @@ How does performance change by varying the following parameters?
 
 * Input rows→1000, 5000 rows/
 
-## add plots
+<img src="imgs/batch_size_v_time.png" alt="Testo alternativo">
+
+<img src="imgs/batch_vs_row.png" alt="Testo alternativo">
+
+<img src="imgs/kafka_partitions.png" alt="Testo alternativo">
