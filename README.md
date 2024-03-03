@@ -227,7 +227,8 @@ def polling():
 
   * Create periodic function and launch the dashboard with `bokeh serve --show consumer_dashboard.py`
 
-  # aggiungi gif dashboard se si può
+<img src="imgs/dashboard.gif" alt="Testo alternativo">
+
 
 ## Metrics analysis
 
