@@ -229,20 +229,6 @@ def polling():
 
 <img src="imgs/dashboard.gif" alt="dashboard gif">
 
-
-<figure>
-  <img src="imgs/dashboard.gif" alt="dashboard gif" style="width:100%; animation: speed-up 2s steps(30) infinite;">
-  <figcaption>This is a faster version of the GIF.</figcaption>
-</figure>
-
-<style>
-  @keyframes speed-up {
-    from { background-position: 0 0; }
-    to { background-position: -3000px 0; }
-  }
-</style>
-
-
 ## Metrics analysis
 
 How does performance change by varying the following parameters?
