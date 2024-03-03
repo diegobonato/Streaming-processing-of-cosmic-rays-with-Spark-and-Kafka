@@ -50,9 +50,6 @@ for obj in list_obj_contents:
     df=pd.read_csv(s3_client.get_object(Bucket='##', Key=obj['Key']).get('Body'), sep=' ')
     df.rename(columns = {'HEAD,FPGA,TDC_CHANNEL,ORBIT_CNT,BX_COUNTER,TDC_MEAS':'values'}, inplace = True)
     
-
-    
-    
     "..."
 
         # append a record to the msg to send
@@ -127,10 +124,6 @@ raw_data = rawraw_data.selectExpr("cast(split(value, ',')[0] as int) as HEAD",
 
 ```python3
 
-from numpyencoder import NumpyEncoder
-
-ID = -1
-
 # function to apply to each batch: writes and sends a kafka message at the end
 def batch_processing(df, epoch_id):
 
@@ -162,32 +155,7 @@ def batch_processing(df, epoch_id):
     ch0_tdc_counts = tdc_counts.filter(tdc_counts.CHAMBER == 0).select('TDC_CHANNEL','TDC_COUNTS')\
                     .sort("TDC_CHANNEL").toPandas()
     
-    ch1_tdc_counts = tdc_counts.filter(tdc_counts.CHAMBER == 1).select('TDC_CHANNEL','TDC_COUNTS')\
-                    .sort("TDC_CHANNEL").toPandas()
-    
-    ch2_tdc_counts = tdc_counts.filter(tdc_counts.CHAMBER == 2).select('TDC_CHANNEL','TDC_COUNTS')\
-                    .sort("TDC_CHANNEL").toPandas()
-    
-    ch3_tdc_counts = tdc_counts.filter(tdc_counts.CHAMBER == 3).select('TDC_CHANNEL','TDC_COUNTS')\
-                    .sort("TDC_CHANNEL").toPandas()
-
-    
-    
-    #Save it in a list
-    
-    ch0_tdc_channels_list = list(ch0_tdc_counts['TDC_CHANNEL'])
-    ch0_tdc_counts_list   = list(ch0_tdc_counts['TDC_COUNTS'])
-
-    ch1_tdc_channels_list = list(ch1_tdc_counts['TDC_CHANNEL'])
-    ch1_tdc_counts_list   = list(ch1_tdc_counts['TDC_COUNTS'])
-    
-    ch2_tdc_channels_list = list(ch2_tdc_counts['TDC_CHANNEL'])
-    ch2_tdc_counts_list   = list(ch2_tdc_counts['TDC_COUNTS'])
-    
-    ch3_tdc_channels_list = list(ch3_tdc_counts['TDC_CHANNEL'])
-    ch3_tdc_counts_list   = list(ch3_tdc_counts['TDC_COUNTS'])
-    
-    
+   "(...)"
 
     # 4: histogram of the total number of active TDC_CHANNEL in each ORBIT_CNT, per chamber (4 arrays per batch)
 
@@ -196,40 +164,13 @@ def batch_processing(df, epoch_id):
 
     ch0_orbit_counts = orbit_count.filter(orbit_count.CHAMBER == 0).select('ORBIT_CNT','TDC_ORBIT')\
                     .sort("ORBIT_CNT").toPandas()
-    
-    ch1_orbit_counts = orbit_count.filter(orbit_count.CHAMBER == 1).select('ORBIT_CNT','TDC_ORBIT')\
-                    .sort("ORBIT_CNT").toPandas()
-    
-    ch2_orbit_counts = orbit_count.filter(orbit_count.CHAMBER == 2).select('ORBIT_CNT','TDC_ORBIT')\
-                    .sort("ORBIT_CNT").toPandas()
-    
-    ch3_orbit_counts = orbit_count.filter(orbit_count.CHAMBER == 3).select('ORBIT_CNT','TDC_ORBIT')\
-                    .sort("ORBIT_CNT").toPandas()
-    
-    #Save it in a list
-    
-    ch0_orbit_list          = list(ch0_orbit_counts['ORBIT_CNT'])
-    ch0_orbit_counts_list   = list(ch0_orbit_counts['TDC_ORBIT'])
+    "(...)"
 
-    ch1_orbit_list          = list(ch1_orbit_counts['ORBIT_CNT'])
-    ch1_orbit_counts_list   = list(ch1_orbit_counts['TDC_ORBIT'])
-
-    ch2_orbit_list          = list(ch2_orbit_counts['ORBIT_CNT'])
-    ch2_orbit_counts_list   = list(ch2_orbit_counts['TDC_ORBIT'])
-    
-    ch3_orbit_list          = list(ch3_orbit_counts['ORBIT_CNT'])
-    ch3_orbit_counts_list   = list(ch3_orbit_counts['TDC_ORBIT'])
-    
-
- 
-    
     df.unpersist()
     tdc_counts.unpersist()
     orbit_count.unpersist()
         
-    
-    global ID
-    ID += 1
+    "(...)"
 
     # prepare message to send to kafka
     
@@ -244,50 +185,21 @@ def batch_processing(df, epoch_id):
                 'bin_edges': ch0_tdc_channels_list,
                 'hist_counts': ch0_tdc_counts_list
             },
-            '1': {
-                'bin_edges': ch1_tdc_channels_list,
-                'hist_counts': ch1_tdc_counts_list
-            },
-            '2': {
-                'bin_edges': ch2_tdc_channels_list,
-                'hist_counts': ch2_tdc_counts_list
-            },
-            '3': {
-                'bin_edges': ch3_tdc_channels_list,
-                'hist_counts': ch3_tdc_counts_list
-            }
+            "(...)"
         },
         'active_tdc_chamber': {
             '0': {
                 'bin_edges': ch0_orbit_list,
                 'hist_counts': ch0_orbit_counts_list
             },
-            '1': {
-                'bin_edges': ch1_orbit_list,
-                'hist_counts': ch1_orbit_counts_list
-            },
-            '2': {
-                'bin_edges': ch2_orbit_list,
-                'hist_counts': ch2_orbit_counts_list
-            },
-            '3': {
-                'bin_edges': ch3_orbit_list,
-                'hist_counts': ch3_orbit_counts_list
-            }
         }
+            "(...)"
     }
+    
    
-
-    
-    
-    
     producer.send('data_clean', json.dumps(msg).encode('utf-8'))
     producer.flush()
-    #producer.poll(0)
-    
-    stop = time.time() - start
-    
-    print(f'\nTime: {stop}')
+   
 
 # Apply function to the streaming dataset
 
@@ -310,7 +222,6 @@ query.awaitTermination(5)
 consumer = KafkaConsumer('data_clean',
                          bootstrap_servers = KAFKA_BOOTSTRAP_SERVER)
                         
-
 ```
 
 * Poll messages
